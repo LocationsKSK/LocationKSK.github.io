@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locations and Postal Codes</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #e60012;
+            margin-bottom: 20px;
+        }
+        .category {
+            background: #2e2e2e;
+            border: 1px solid #444;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .category h2 {
+            margin: 0 0 10px;
+            color: #e60012;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 3px;
+            margin: 5px 0;
+            padding: 10px;
+            color: #fff;
+        }
+        .form-section {
+            background: #2e2e2e;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            margin-top: 30px;
+        }
+        .form-section h3 {
+            margin: 0 0 15px;
+            color: #e60012;
+        }
+        input[type="text"], select {
+            width: calc(33% - 10px);
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            outline: none;
+            background-color: #3a3a3a;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #e60012;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #b3000e;
+        }
+        @media (max-width: 600px) {
+            input[type="text"], select {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>Locations and Postal Codes</h1>
+<div id="categories">
+    <!-- Categories will be dynamically added here -->
+</div>
+
+<div class="form-section">
+    <h3>Add a New Category</h3>
+    <input type="text" id="categoryName" placeholder="Category Name">
+    <input type="text" id="locationName" placeholder="Location Name">
+    <input type="text" id="postalCode" placeholder="Postal Code">
+    <button onclick="addCategory()">Add Category</button>
+</div>
+
+<div class="form-section">
+    <h3>Add to Existing Category</h3>
+    <select id="existingCategory">
+        <!-- Options will be dynamically added here -->
+    </select>
+    <input type="text" id="newLocationName" placeholder="Location Name">
+    <input type="text" id="newPostalCode" placeholder="Postal Code">
+    <button onclick="addToExistingCategory()">Add to Category</button>
+</div>
+
+<script>
+    function addCategory() {
+        const categoryName = document.getElementById('categoryName').value.trim();
+        const locationName = document.getElementById('locationName').value.trim();
+        const postalCode = document.getElementById('postalCode').value.trim();
+
+        if (!categoryName || !locationName || !postalCode) {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        let categoriesDiv = document.getElementById('categories');
+        
+        // Check if category already exists
+        let existingCategory = document.querySelector(`.category[data-name="${categoryName}"]`);
+        
+        if (existingCategory) {
+            // Add new location to the existing category
+            let ul = existingCategory.querySelector('ul');
+            let li = document.createElement('li');
+            li.textContent = `${locationName} - ${postalCode}`;
+            ul.appendChild(li);
+        } else {
+            // Create a new category
+            let categoryDiv = document.createElement('div');
+            categoryDiv.classList.add('category');
+            categoryDiv.setAttribute('data-name', categoryName);
+
+            let h2 = document.createElement('h2');
+            h2.textContent = categoryName;
+            categoryDiv.appendChild(h2);
+
+            let ul = document.createElement('ul');
+            let li = document.createElement('li');
+            li.textContent = `${locationName} - ${postalCode}`;
+            ul.appendChild(li);
+
+            categoryDiv.appendChild(ul);
+            categoriesDiv.appendChild(categoryDiv);
+
+            // Add to the dropdown for existing categories
+            let existingCategoryDropdown = document.getElementById('existingCategory');
+            let option = document.createElement('option');
+            option.value = categoryName;
+            option.textContent = categoryName;
+            existingCategoryDropdown.appendChild(option);
+        }
+
+        // Clear input fields
+        document.getElementById('categoryName').value = '';
+        document.getElementById('locationName').value = '';
+        document.getElementById('postalCode').value = '';
+    }
+
+    function addToExistingCategory() {
+        const existingCategoryName = document.getElementById('existingCategory').value;
+        const newLocationName = document.getElementById('newLocationName').value.trim();
+        const newPostalCode = document.getElementById('newPostalCode').value.trim();
+
+        if (!existingCategoryName || !newLocationName || !newPostalCode) {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        let existingCategory = document.querySelector(`.category[data-name="${existingCategoryName}"]`);
+
+        if (existingCategory) {
+            let ul = existingCategory.querySelector('ul');
+            let li = document.createElement('li');
+            li.textContent = `${newLocationName} - ${newPostalCode}`;
+            ul.appendChild(li);
+        }
+
+        // Clear input fields
+        document.getElementById('newLocationName').value = '';
+        document.getElementById('newPostalCode').value = '';
+    }
+</script>
+
+</body>
+</html>
