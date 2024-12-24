@@ -41,6 +41,28 @@
             margin: 5px 0;
             padding: 10px;
             color: #fff;
+            position: relative;
+        }
+        li:hover .delete-btn {
+            display: block;
+        }
+        li:hover {
+            cursor: pointer;
+        }
+        .delete-btn {
+            display: none;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background-color: #e60012;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .delete-btn:hover {
+            background-color: #b3000e;
         }
         .form-section {
             background: #2e2e2e;
@@ -55,7 +77,7 @@
             color: #e60012;
         }
         input[type="text"], select {
-            width: calc(33% - 10px);
+            width: calc(50% - 10px);
             padding: 10px;
             margin-right: 10px;
             border: 1px solid #555;
@@ -96,8 +118,8 @@
 <div class="form-section">
     <h3>Add a New Category</h3>
     <input type="text" id="categoryName" placeholder="Category Name">
-    <input type="text" id="locationName" placeholder="Location Name">
     <input type="text" id="postalCode" placeholder="Postal Code">
+    <input type="text" id="locationDescription" placeholder="Location Description">
     <button onclick="addCategory()">Add Category</button>
 </div>
 
@@ -106,35 +128,30 @@
     <select id="existingCategory">
         <!-- Options will be dynamically added here -->
     </select>
-    <input type="text" id="newLocationName" placeholder="Location Name">
     <input type="text" id="newPostalCode" placeholder="Postal Code">
+    <input type="text" id="newLocationDescription" placeholder="Location Description">
     <button onclick="addToExistingCategory()">Add to Category</button>
 </div>
 
 <script>
     function addCategory() {
         const categoryName = document.getElementById('categoryName').value.trim();
-        const locationName = document.getElementById('locationName').value.trim();
         const postalCode = document.getElementById('postalCode').value.trim();
+        const locationDescription = document.getElementById('locationDescription').value.trim();
 
-        if (!categoryName || !locationName || !postalCode) {
+        if (!categoryName || !postalCode || !locationDescription) {
             alert('Please fill in all fields.');
             return;
         }
 
         let categoriesDiv = document.getElementById('categories');
         
-        // Check if category already exists
         let existingCategory = document.querySelector(`.category[data-name="${categoryName}"]`);
         
         if (existingCategory) {
-            // Add new location to the existing category
             let ul = existingCategory.querySelector('ul');
-            let li = document.createElement('li');
-            li.textContent = `${locationName} - ${postalCode}`;
-            ul.appendChild(li);
+            addListItem(ul, postalCode, locationDescription);
         } else {
-            // Create a new category
             let categoryDiv = document.createElement('div');
             categoryDiv.classList.add('category');
             categoryDiv.setAttribute('data-name', categoryName);
@@ -144,14 +161,11 @@
             categoryDiv.appendChild(h2);
 
             let ul = document.createElement('ul');
-            let li = document.createElement('li');
-            li.textContent = `${locationName} - ${postalCode}`;
-            ul.appendChild(li);
+            addListItem(ul, postalCode, locationDescription);
 
             categoryDiv.appendChild(ul);
             categoriesDiv.appendChild(categoryDiv);
 
-            // Add to the dropdown for existing categories
             let existingCategoryDropdown = document.getElementById('existingCategory');
             let option = document.createElement('option');
             option.value = categoryName;
@@ -159,18 +173,15 @@
             existingCategoryDropdown.appendChild(option);
         }
 
-        // Clear input fields
-        document.getElementById('categoryName').value = '';
-        document.getElementById('locationName').value = '';
-        document.getElementById('postalCode').value = '';
+        clearFields(['categoryName', 'postalCode', 'locationDescription']);
     }
 
     function addToExistingCategory() {
         const existingCategoryName = document.getElementById('existingCategory').value;
-        const newLocationName = document.getElementById('newLocationName').value.trim();
         const newPostalCode = document.getElementById('newPostalCode').value.trim();
+        const newLocationDescription = document.getElementById('newLocationDescription').value.trim();
 
-        if (!existingCategoryName || !newLocationName || !newPostalCode) {
+        if (!existingCategoryName || !newPostalCode || !newLocationDescription) {
             alert('Please fill in all fields.');
             return;
         }
@@ -179,14 +190,28 @@
 
         if (existingCategory) {
             let ul = existingCategory.querySelector('ul');
-            let li = document.createElement('li');
-            li.textContent = `${newLocationName} - ${newPostalCode}`;
-            ul.appendChild(li);
+            addListItem(ul, newPostalCode, newLocationDescription);
         }
 
-        // Clear input fields
-        document.getElementById('newLocationName').value = '';
-        document.getElementById('newPostalCode').value = '';
+        clearFields(['newPostalCode', 'newLocationDescription']);
+    }
+
+    function addListItem(ul, postalCode, description) {
+        let li = document.createElement('li');
+        li.textContent = `${postalCode}`;
+        li.title = description;
+
+        let deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.onclick = () => ul.removeChild(li);
+
+        li.appendChild(deleteBtn);
+        ul.appendChild(li);
+    }
+
+    function clearFields(ids) {
+        ids.forEach(id => document.getElementById(id).value = '');
     }
 </script>
 
